@@ -2,15 +2,23 @@ const express = require("express");
 
 const app = express();
 
-//Request Handler
-app.use((req, res) => {
-  res.send("Hello from server");
-});
+app.use("/user", [
+  (req, res, next) => {
+    console.log("Handling the route user1");
 
-//Request Handler for /test
-app.use("/test", (req, res) => {
-  res.send("Hello from server");
-});
+    next();
+  },
+  (req, res, next) => {
+    console.log("Handling the route user2");
+    // res.send("Response2");
+    next();
+  },
+  (req, res, next) => {
+    console.log("Handling the route user3");
+    res.send("Response3");
+    // next();
+  },
+]);
 
 app.listen(3000, () => {
   console.log("Server is running on PORT 3000");
