@@ -8,25 +8,54 @@ const app = express();
 app.use(express.json());
 
 app.post("/signup", async (req, res) => {
+  //taking data from body
+  const { firstName, lastName, emailId, password, age, gender } = req.body;
+
+  const userObj = {
+    firstName: firstName,
+    lastName: lastName,
+    emailId: emailId,
+    password: password,
+    age: age,
+    gender: gender,
+  };
+
   try {
-    //taking data from body
-    const { firstName, lastName, emailId, password, age, gender } = req.body;
-
-    const userObj = {
-      firstName: firstName,
-      lastName: lastName,
-      emailId: emailId,
-      password: password,
-      age: age,
-      gender: gender,
-    };
-
     //creating a new instance of the User Model
     const user = new User(userObj);
     await user.save();
     res.send("User added Successfully");
   } catch (err) {
     res.status(400).send("Error saving the user:" + err.message);
+  }
+});
+
+//Getting data from email
+app.get("/user", async (req, res) => {
+  const userEmail = req.body.emailId;
+  try {
+    const users = await User.find({ emailId: userEmail });
+    if (users.length === 0) {
+      res.status(404).send("User not found");
+    } else {
+      res.send(users);
+    }
+  } catch (err) {
+    res.status(400).send("Something went wrong:" + err.message);
+  }
+});
+
+//Get all user from the database
+app.get("/feed", async (req, res) => {
+  try {
+    const users = await User.find({}); //no filter added
+    if (users.lenght == 0) {
+      res.send("No user Found");
+    } else {
+      res.send(users);
+    }
+  } catch (err) {
+    res.status(400).send("Some Error is Occured");
   }
 });
 
