@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const validator = require("validator");
 
 const userSchema = mongoose.Schema(
   {
@@ -21,12 +22,22 @@ const userSchema = mongoose.Schema(
       unique: true,
       lowercase: true,
       trim: true,
+      validate(value) {
+        if (!validator.isEmail(value)) {
+          throw new Error("Invalid Email Address");
+        }
+      },
     },
     password: {
       type: String,
       required: true,
       minLength: 5,
       maxLength: 20,
+      validate(value) {
+        if (!validator.isStrongPassword(value)) {
+          throw new Error("Not a strong Password");
+        }
+      },
     },
     age: {
       type: Number,
@@ -46,6 +57,11 @@ const userSchema = mongoose.Schema(
       type: String,
       default:
         "https://png.pngtree.com/png-clipart/20231019/original/pngtree-user-profile-avatar-png-image_13369989.png",
+      validate(value) {
+        if (!validator.isURL(value)) {
+          throw new Error("Invalid Photo URL");
+        }
+      },
     },
     about: {
       type: String,

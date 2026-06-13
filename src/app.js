@@ -94,14 +94,31 @@ app.delete("/user", async (req, res) => {
 });
 
 //Update the document
-app.patch("/user", async (req, res) => {
-  const userId = req.body.userId;
+app.patch("/user/:userId", async (req, res) => {
+  const userId = req.params?.userId;
   const data = req.body;
+
   try {
+    //api level validation
+    const ALLOWED_UPDATES = ["photoUrl", "about", "gender", "age", "skills"];
+
+    const isUpdateAllowed = Object.keys(data).every((k) =>
+      ALLOWED_UPDATES.includes(k),
+    );
+
+    if (!isUpdateAllowed) {
+      throw new Error("Update not allowed");
+    }
+
+    if (data?.skills.length > 30) {
+      throw new Error("Skills can't be grater than 30");
+    }
+
     const user = await User.findByIdAndUpdate({ _id: userId }, data, {
       returnDocument: "before",
       runValidators: true, //it enables to run validate fn mentioned in schema
     });
+
     if (!user) {
       res.status(200).send("User not Found");
     } else {
