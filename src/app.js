@@ -100,6 +100,7 @@ app.patch("/user", async (req, res) => {
   try {
     const user = await User.findByIdAndUpdate({ _id: userId }, data, {
       returnDocument: "before",
+      runValidators: true, //it enables to run validate fn mentioned in schema
     });
     if (!user) {
       res.status(200).send("User not Found");
@@ -107,14 +108,15 @@ app.patch("/user", async (req, res) => {
       res.send("User Updated successfully");
     }
   } catch (err) {
-    res.status(400).send("Something went Wrong");
+    res.status(400).send("Something went Wrong" + err.message);
   }
 });
 
 //ensures that database connection is established before starting the server
 connectDB()
-  .then(() => {
+  .then(async () => {
     console.log("Database Connection Successful");
+    await User.syncIndexes();
     app.listen(3000, () => {
       console.log("Server is running on PORT 3000");
     });
