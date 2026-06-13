@@ -3,9 +3,9 @@ const mongoose = require("mongoose");
 
 const connectDB = async () => {
   await mongoose
-    .connect(
-         //add database connection string
-    );
+    .connect
+    //add database connection string
+    ();
 };
 
 module.exports = connectDB;
